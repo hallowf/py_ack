@@ -1,9 +1,22 @@
 from multiprocessing import Process, Queue
 from multiprocessing.pool import ThreadPool
-
-queue = Queue()
+import time
 
 ## Maybe use a class for ackerman function
+
+class clack:
+
+    def ack(self,m,n):
+        ans = 0
+        if (m == 0):
+            ans = n+1
+        elif (n == 0):
+            ans = self.ack(m-1,1)
+        else:
+            ans = self.ack(m-1, self.ack(m, n-1))
+        return ans
+
+
 
 def ack(m, n):
     ans = 0
@@ -13,8 +26,17 @@ def ack(m, n):
         ans = ack(m-1,1)
     else:
         ans = ack(m-1, ack(m,n-1))
-    print("Ackerman of [{},{}] is {}".format(m,n,ans))
     return ans
+
+def gen_ack(m,n):
+    ans = 0
+    if (m == 0):
+        ans = n+1
+    elif (n == 0):
+        ans = gen_ack(m-1,1)
+    else:
+        ans = gen_ack(m-1, ack(m,n-1))
+    yield ans
 
 ### **********
 """
@@ -28,7 +50,6 @@ Second one seems to take less time
     b = (m, n-1)
     a = (m-1, tup_ack(b))
     ans = tup_ack(a)
-
 """
 
 def tup_ack(a):
@@ -50,19 +71,24 @@ def tup_ack(a):
 
 
 ## Unfinished
-def mp_ack(a):
+def mt_ack(m,n):
     ans = 0
-    m,n = a
     if (m == 0):
-        ans = n + 1
+        fin_ans = n + 1
     elif (n == 0):
         fp = ThreadPool(processes=1)
-        ans = fp.apply_async(mp_ack, ((mp_ack((m-1, 1))))
+        ans = fp.apply_async(mt_ack, (m-1, 1))
+        fin_ans = ans.get()
     else:
-        ans = ans.get()
-    print(ans.get())
+        fp = ThreadPool(processes=1)
+        sp = ThreadPool(processes=1)
+        f_ans = fp.apply_async(mt_ack, (m, n-1))
+        f_res = f_ans.get()
+        s_ans = sp.apply_async(mt_ack, (m-1, f_res))
+        fin_ans = s_ans.get()
+    print(fin_ans)
+    return fin_ans
 
-mp_ack((3, 0))
 ## See this ==========>
 """
 def foo(bar, baz):
@@ -85,6 +111,8 @@ return_val = async_result.get()  # get the return value from your function.
 if all items are already obtained
 q = multiprocessing.Queue()
 """
+queue = Queue()
+
 def old_mp_ack():
     #ans = 0
     #m, n = a
@@ -131,4 +159,3 @@ def que_ack(q, a):
 
     print(ans)
     return (ans, NotImplementedError)
-
