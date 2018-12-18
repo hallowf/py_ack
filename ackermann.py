@@ -1,6 +1,3 @@
-from multiprocessing import Process, Queue
-from multiprocessing.pool import ThreadPool
-import time
 
 ## Maybe use a class for ackerman function
 
@@ -70,24 +67,7 @@ def tup_ack(a):
 
 
 
-## Unfinished
-def mt_ack(m,n):
-    ans = 0
-    if (m == 0):
-        fin_ans = n + 1
-    elif (n == 0):
-        fp = ThreadPool(processes=1)
-        ans = fp.apply_async(mt_ack, (m-1, 1))
-        fin_ans = ans.get()
-    else:
-        fp = ThreadPool(processes=1)
-        sp = ThreadPool(processes=1)
-        f_ans = fp.apply_async(mt_ack, (m, n-1))
-        f_res = f_ans.get()
-        s_ans = sp.apply_async(mt_ack, (m-1, f_res))
-        fin_ans = s_ans.get()
-    print(fin_ans)
-    return fin_ans
+
 
 ## See this ==========>
 """
@@ -111,7 +91,28 @@ return_val = async_result.get()  # get the return value from your function.
 if all items are already obtained
 q = multiprocessing.Queue()
 """
+
+"""
 queue = Queue()
+
+## Unfinished
+def mt_ack(m,n):
+    ans = 0
+    if (m == 0):
+        fin_ans = n + 1
+    elif (n == 0):
+        fp = ThreadPool(processes=1)
+        ans = fp.apply_async(mt_ack, (m-1, 1))
+        fin_ans = ans.get()
+    else:
+        fp = ThreadPool(processes=1)
+        sp = ThreadPool(processes=1)
+        f_ans = fp.apply_async(mt_ack, (m, n-1))
+        f_res = f_ans.get()
+        s_ans = sp.apply_async(mt_ack, (m-1, f_res))
+        fin_ans = s_ans.get()
+    print(fin_ans)
+    return fin_ans
 
 def old_mp_ack():
     #ans = 0
@@ -159,3 +160,5 @@ def que_ack(q, a):
 
     print(ans)
     return (ans, NotImplementedError)
+
+"""

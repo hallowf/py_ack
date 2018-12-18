@@ -1,11 +1,12 @@
 from flask import Flask, request
 from flask_api import status
 import multiprocessing, os, time
-from ackermann import ack, tup_ack, mt_ack, clack
+from ackermann import ack, tup_ack, clack
+from cy_ack import ack as cy_ack
 from api import app
 from utilities.tools import time_func
 
-pool = multiprocessing.Pool()
+pool = []
 
 
 @app.route('/ack')
@@ -14,6 +15,20 @@ def do_ack():
     n = int(request.args.get('n'))
     try:
         ans = time_func(ack, (m,n))
+        print(str(ans))
+        return str(ans), status.HTTP_200_OK
+    except RecursionError as expected:
+        return (str(expected) + '\n',
+        status.HTTP_413_REQUEST_ENTITY_TOO_LARGE)
+
+@app.route('/cyack')
+def do_cyack():
+    m = int(request.args.get('m'))
+    n = int(request.args.get('n'))
+    try:
+        #ans = cy_ack.ack(m, n)
+        # Will this even work
+        ans = time_func(cy_ack, (m,n))
         print(str(ans))
         return str(ans), status.HTTP_200_OK
     except RecursionError as expected:
@@ -47,7 +62,7 @@ def do_tupack():
             return (str(expected) + '\n',
             status.HTTP_413_REQUEST_ENTITY_TOO_LARGE)
 
-
+""" Disabled
 @app.route('/mtack')
 def do_mtack():
     m = int(request.args.get('m'))
@@ -64,6 +79,7 @@ def do_mtack():
         print('Answer of ack({},{}) is {}'.format(m,n,ans))
         return ('Answer of ack({},{}) is {}'.format(m,n,ans) + '\n',
         status.HTTP_200_OK)
+"""
 
 @app.route('/clack')
 def do_clack():
@@ -119,4 +135,5 @@ def do_all():
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", "2890"))
-    app.run( host="0.0.0.0",port=port)
+    pool = multiprocessing.Pool()
+    app.run( host="0.0.0.0",port=port, debug=True)
