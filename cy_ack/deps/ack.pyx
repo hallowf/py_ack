@@ -1,5 +1,5 @@
 cpdef int ack(int m, int n):
-    int ans = 0
+    int (ans = 0)
     if (m == 0):
         ans = n+1
     elif (n == 0):
